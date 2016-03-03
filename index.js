@@ -90,12 +90,15 @@ function adapter(uri, opts){
    */
 
   Redis.prototype.onmessage = function(channel, msg){
-    var args = msgpack.decode(msg);
+    //var args = msgpack.decode(msg);
+    var args = JSON.parse(msg);
+    //sails.log.debug(JSON.stringify((args)));
     var packet;
 
     if (uid == args.shift()) return debug('ignore same uid');
 
     packet = args[0];
+
 
     if (packet && packet.nsp === undefined) {
       packet.nsp = '/';
@@ -123,7 +126,8 @@ function adapter(uri, opts){
     Adapter.prototype.broadcast.call(this, packet, opts);
     if (!remote) {
       var chn = prefix + '#' + packet.nsp + '#';
-      var msg = msgpack.encode([uid, packet, opts]);
+      //var msg = msgpack.encode([uid, packet, opts]);
+      var msg = JSON.stringify([uid, packet, opts]);
       if (opts.rooms) {
         opts.rooms.forEach(function(room) {
           var chnRoom = chn + room + '#';
